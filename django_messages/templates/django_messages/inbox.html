@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="container">
+            
+<div class="navbar-nav pr-2">
+        <a class="nav-item nav-link" href="\"><span class="fa fa-inbox fa-2x"></span> Inbox</a>
+
+        <a class="nav-item nav-link" href="{% url 'messages_outbox' %}"><span class="fa fa-mail-forward fa-2x"> </span> Send</a>
+        <a class="nav-item nav-link" href="{% url 'messages_trash' %}"><span class="fa fa-trash-o fa-2x"> </span> Deleted</a>
+
+</div>
+</div>
+<p ><h1 style="text-align: center !important;">{% trans "Inbox" %} </h1 style="text-align: center !important;"></p>
+{% if message_list %}
+<div class="container">
+    <div class="table-responsive text-nowrap">
+    <table class="table messages">
+        
+        <thead>
+           <tr><th scope="row "> <strong>{% trans "Sender" %}</strong></th><th scope="row">{% trans "Subject" %}</th><th scope="row"> {% trans "Received" %}</th><th scope="row">{% trans "Delete" %}</th></tr>
+        </thead>
+        <tbody>
+    {% for message in message_list %}
+        <tr>
+            <td>{{ message.sender }}</td>
+            <td>
+                {% if message.new %}<strong>{% endif %}
+                {% if message.replied %}<em>{% endif %}
+                <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
+                {% if message.replied %}</em>{% endif %}
+                {% if message.new %}</strong>{% endif %}</td>
+            <td>{{ message.sent_at|date:_("DATETIME_FORMAT") }}</td>
+            <td><a href="{% url 'messages_delete' message.id  %}" style="color:red;">
+                <i class="fa fa-trash fa-2x" ></i>
+            </a>  </td>
+        </tr>
+    {% endfor %}
+        </tbody>
+    </table>
+</div>
+</div>
+{% else %}
+<p>{% trans "No messages." %}</p>
+{% endif %}
+{% endblock %}

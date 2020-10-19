@@ -1,0 +1,349 @@
+{% extends "base.html" %}
+
+{% load cloudinary %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+
+
+<div class="row">
+    {% if user.is_authenticated %}
+    <div class="col-12 col-md-3 pr-4 dont-move">
+        <a href="/"> <h2><img class="img-fluid" width="60" src="{% static 'img/logo.png' %}">ReadyTweet</h2></a><br>
+        <div class="profile-section">
+        <h3 class="white-important p-2">
+            Profile
+        </h3>
+        <article class="media content-section" style="height: 140px; width: 100%">
+            {%  if user_profile != None %}
+                <div class="mt-2 d-flex full-width align-items-center">
+                    <img
+                       class="rounded-circle mr-3 img-fluid"
+                       style="width: 90px; height: 90px;"
+                       src="{{ user_profile.profile.image.url }}">
+                    <div>
+                        <h4 style="text-align: left"
+                                class="white-important">
+                            {{ user_profile.username }}
+                        </h4>
+                        <h6 style="text-align: left"
+                                class="email-profile">
+                            {{ user_profile.email }}
+                        </h6>
+
+                    </div>
+                </div>
+            {%  else %}
+                <div class="mt-2 d-flex full-width align-items-center">
+                    <img
+                       class="rounded-circle mr-3"
+                       style="width: 90px; height: 90px;"
+                       src="{{ user.profile.image.url }}">
+                    <div>
+                        <h4 style="text-align: left"
+                                class="white-important">
+                            {{ user.username }}
+                        </h4>
+                        <h6 style="text-align: left"
+                                class="email-profile">
+                            {{ user.email }}
+                        </h6>
+                        <h4 style="text-align: left"
+                                class="white-important">
+                            <a href="\" class="btn btn-secondary">Message </a>
+
+                        </h4>
+
+                        
+                    </div>
+                </div>
+            {%  endif %}
+        </article>
+        <article class="media content-section">
+            <div class="row full-width pl-2">
+                <div class="col-6">
+                        Followers
+                </div>
+                <div class="col-6">
+                        Following
+                </div>
+                {%  if user_profile != None %}
+                    <div class="col-6">
+                        <h3 class="white-important follow-click">
+                            <a href="{% url 'user-followers' user_profile.username %}">
+                                {{ user_profile.profile.follwers }}
+                            </a>
+                        </h3>
+                    </div>
+                     <div class="col-6">
+                        <a href="{% url 'user-follows' user_profile.username %}">
+                            <h3 class="white-important follow-click">
+                                {{ user_profile.profile.following }}
+                            </h3>
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="col-6">
+                        <a href="{% url 'user-followers' user.username %}">
+                            <h3 class="white-important follow-click">
+                                {{ user.profile.follwers }}
+                            </h3>
+                        </a>
+                    </div>
+
+                    <a href="{% url 'user-follows' user.username %}">
+                        <div class="col-6">
+                            <h3 class="white-important follow-click">
+                                {{ user.profile.following }}
+                            </h3>
+                        </div>
+                    </a>
+                {%  endif %}
+            </div>
+        </article>
+        
+        <div class="d-flex">
+            {% if user_profile is None %}
+            <div style="margin-left: 40px">
+                <a class="btn btn-sm btn-outline-primary mb-4 mr-3 " href="{% url 'post-create' %}">
+                    Tweet
+                </a>
+            </div>
+            {% endif %}
+            {%  if user_profile is not None and user_profile.id != user.id  and user.username != '' %}
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <button style="margin-left: 18px" class="btn btn-sm btn-outline-primary"
+                                name="{% if can_follow %}follow{% else %}unfollow{% endif %}"
+                                type="submit">
+                             {% if can_follow %}
+                                 FOLLOW
+                             {% else %}
+                                 UNFOLLOW
+                             {% endif %}
+                        </button>
+                    </div>
+                </form>
+            {% endif %}
+        </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-12 col-md-6 scrollable" >
+        
+        
+        <hr class=" my-4 " > 
+        <div class="full-width row">
+            <div class="col-6">
+                <h3 class="white-important mb-3">
+                    Tweets
+                </h3>
+            </div>
+             <div class="col-6 no-padding">
+                <h6
+                        style="position: absolute; bottom: 0; right: 0"
+                        class="white-important mb-3">
+                    {{ page_obj.start_index }} - {{ page_obj.end_index }} of
+                    {{ paginator.count }}
+                </h6>
+            </div>
+        </div> 
+        {% for post in posts %}
+            <article class="media content-section hovered-tweet">
+                <div style="width: 100%; word-break: break-all;">
+                    <div class="pb-2 row m-0" style="width: 100%; margin-right: 0 !important;">
+                        <div style="padding-left: 0px !important;" class="col-8 no-padding d-flex align-items-center">
+                           <img class="rounded-circle mr-2" style="width: 20px; height: 20px;" src="{{ post.author.profile.image.url }}">
+                           <a class="mr-2 white-important" href="{% url 'user-posts' post.author %}">
+                               {{ post.author }}
+                           </a>
+                       </div>
+
+                       <div class="col-4 d-flex flex-row-reverse no-padding align-items-center"
+                            style="padding-right: 0 !important;">
+                           {% if post.author == user %}
+                                <a class="material-icons ml-2"
+                                   style="font-size: 14px"
+                                        href="{% url 'post-delete' post.id %}">clear</a>
+                                <a class="material-icons ml-2"
+                                   style="font-size: 14px"
+                                        href="{% url 'post-update' post.id %}">update</a>
+                            {%  endif %}
+                       </div>
+                       
+                    </div>
+                    <div class="mb-2" style="width: 100%; height: 1px; background-color: rgba(255, 255, 255, 0.1)"></div>
+                    {% if post.photo  is not None %}
+                            <img class='card-img-top '  style="width: 400px; height: 200px;" src='{{ post.photo.url}}' >
+                            <a  class=' white-important'  href="{% url 'post-detail' post.id %}">
+                                <p class="white-important mb-4" >
+                                    {{ post.content}}
+                                </p>
+                            </a>
+                    {% else %}
+                <a  class=' white-important'  href="{% url 'post-detail' post.id %}">
+                    <p class="white-important mb-4" >
+                        {{ post.content}}
+                    </p>
+                </a>
+                {% endif %}
+                <div class="row">
+                    {% if user.is_authenticated %}
+                    <div class="col -6" style="display: flex;">
+                        <small style="opacity: 0.4;">
+                            <a href="#" onClick="document.getElementById('likebutton').submit()">
+                                {% if post.like == 1  %}
+                                    <i style="color: red; font-size: 16px;" class="fa fa-heart"></i>
+                                {% else %}
+                                    <i style="color: gray; font-size: 16px;" class="fa fa-heart"></i>
+                                {% endif %}
+
+                                {{post.like}} like
+
+
+                               
+                            </a>
+                            <form id="likebutton" method="POST" action="{% url 'postpreference' post.id 1 %}">
+                                {% csrf_token %}
+                                <input type="hidden">
+                            </form>
+                        </small>
+
+                        
+
+
+                        <small style="opacity: 0.4; margin-left:15px;">
+                            <a href="/post/{{post.id}}/">
+                                <i style=" font-size: 16px;" class="fa fa-comment"></i> {{ post.number_of_comments }} comment(s)
+                            </a>
+                            
+                        </small>
+
+                        
+                        <div class="col-6">
+                            <small
+                                    style="opacity: 0.4;"
+                                class="white-important d-flex full-width flex-row-reverse">
+                                {{ post.data_posted | date:"H:i l, d.m.y" }}
+                            </small>
+
+                            
+
+
+                        </div>
+                    </div>
+                   
+
+
+                    {% else %}
+                    <div class="col-6">
+                        <small
+                                style="opacity: 0.4;"
+                            class="white-important d-flex full-width flex-row-reverse">
+                            {{ post.data_posted | date:"H:i l, d.m.y" }}
+                        </small>
+                    </div>
+
+                    
+                        <div class="col-6">
+                            <small style="opacity: 0.4;" >
+                            {% if post.like == 1  %}
+                                <i style="color: red; font-size: 16px;" class="fa fa-heart"></i>
+                            {% else %}
+                                <i style="color: gray; font-size: 16px;" class="fa fa-heart"></i>
+                            {% endif %}
+
+                            {{post.like}} like
+                            </small>
+                            <small style="opacity: 0.4; margin-left:15px;">
+                                
+                                    <i style=" font-size: 16px;" class="fa fa-comment"></i> {{ post.number_of_comments }} comment(s)
+                               
+                                
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+
+
+            </div>
+            </article>
+        {% endfor %}
+       
+    </div>
+    <div class="col-12 col-md-3 dont-move">
+        <form action="{% url 'search' %}" method="post">{% csrf_token %}
+            <div class="search-container">
+                <div class="search">
+                    <input required name="search" type="text" id="zip-code-input" placeholder="Search on Twitter">
+                    <button type="submit" style="border:0; background: transparent;"><i class="fa fa-search"></i> </button> 
+                </div>
+            </div>
+
+        </form>
+        <h3 class="white-important mb-3 mt-4"> Trends </h3>
+        {%  if user_profile is None %}
+            <article class="t-section media content-section">
+                <div class="row ">
+                    <div class="col-12">
+                        <h6>Who to follow:</h6>
+                        <ul class="col-12 mt-2">
+                            {% for user in all_users %}
+                                <li>
+                                    <div class="who-to-follow">
+                                        <div style="padding-left: 0px !important;" class="col-8 no-padding d-flex align-items-center">
+                                            <img class="rounded-circle mr-2" style="width: 20px; height: 20px;"
+                                               src="{{ user.profile.image.url }}">
+
+                                            <a class="mr-2 white-important" href="{% url 'user-posts' user.username %}">
+                                                {{ user_profile.username }}
+                                            </a>
+
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+            
+            </article>
+        {% endif %}
+
+    </div>
+</div>
+<div class="row">
+    <div class="full-width d-flex justify-content-center">
+        {% if is_paginated %}
+            {% if page_obj.has_previous %}
+                <a class="btn btn-sm btn-outline-secondary mb-4 mr-2"
+                href="?page=1">First</a>
+                <a class="btn btn-sm btn-outline-secondary mb-4 mr-2"
+                            href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            {% endif %}
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <a class="btn btn-sm btn-info mb-4 mr-2"  href="?page={{ num }}">{{ num }}</a>
+                {% elif  num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <a class="btn btn-sm btn-outline-secondary mb-4 mr-2" href="?page={{ num }}">{{ num }}</a>
+            {% endif %}
+            {% endfor %}
+            {% if page_obj.has_next %}
+            <a class="btn btn-sm btn-outline-secondary mb-4 mr-2" href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a class="btn btn-sm btn-outline-secondary mb-4 mr-2" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+            {% endif %}
+        {% endif %}
+    
+    </div>
+
+
+</div>
+
+
+
+{% endblock content %}

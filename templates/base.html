@@ -1,0 +1,123 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Tiweter</title>
+
+  <link rel="stylesheet" href="{% static 'css/style.css'  %}">
+  <link rel="stylesheet" href="{% static 'css/style1.css'  %}">
+  <link rel="stylesheet" href="{% static 'css/main.css'  %}">
+	<link rel="stylesheet" href="{% static 'js/linearicons.css' %} ">
+  
+  
+
+</head>
+
+<body style="background-color: #15202b !important ;">
+
+
+  
+   
+   <nav style="border-bottom: 1px solid rgba(255, 255, 255, 0.1)" class="navbar fixed-top navbar-expand-lg navbar-dark bg-steel">
+    <div class="navbar-nav mr-auto pl-2">
+      <a class="nav-item nav-link" href="{% url 'blog-home' %}"><h3 style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;">Tiweter </strong> </a>
+    </div>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNavDropdown">
+
+    <!-- Left -->
+    <ul class="navbar-nav mr-auto">
+      {% comment %} <li class="nav-item active">
+        <a class="nav-link waves-effect" href="/">Home
+          <span class="sr-only">(current)</span>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link waves-effect" href="/checkout">
+        Checkout</a>
+      </li> {% endcomment %}
+    </ul>
+    <ul class="navbar-nav">
+      {% if user.is_authenticated %}
+      <li class="nav-item active">
+        <a class="nav-item nav-link" href="{% url 'UserProfile' %}"><span class="fa fa-user-circle-o fa-2x"></span></a>
+
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'profile' %}"><span class="fa fa-edit fa-2x"></span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'messages_inbox' %}">
+          <span class="fa fa-paper-plane fa-2x"></span>
+      </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'logout' %}"><span class="fa fa-sign-out fa-2x"></span></a>
+      </li>
+      {% else %}
+      <li class="nav-item active">
+        <a class="nav-item nav-link" href="{% url 'login' %}"><span class="fa fa-sign-in fa-2x"></span></a>         
+      </li>
+      <li class="nav-item">
+        <a class="nav-item nav-link" href="{% url 'register' %}"><span class="fa fa-registered fa-2x"></span></a>
+      </li>
+      
+      {% endif %}
+
+
+    </ul>
+  </div>
+</nav>
+<br/><br/><br/>
+         <main role="main" class="container-fluid">
+        <br>
+        <div class="row">
+          <div class="col-md-12">
+              {% if messages %}
+                  {% for message in messages %}
+                      <div class="alert alert-{{ message.tags }}">
+                          {{ message }}
+                      </div>
+                  {% endfor %}
+              {% endif %}
+            {% block content %}{% endblock content %}
+          </div>
+          
+            <div class="full-width d-flex justify-content-center">
+              <footer class="footer-area page-footer text-center font-small mt-4 wow fadeIn ">
+              <p><a href="">Terms</a>,
+                <a href="">Privacy policy</a>,
+                <a href="">Cookies</a>,
+                <a href="">Ads info</a>,
+                <a href="">More</a>
+                © 2021 Twitter, Inc.</p>
+              </footer>
+            </div>
+          
+        </div>
+      </main>
+
+     
+    
+      <script src="{% static 'sblog/js/vendor/jquery-2.2.4.min.js' %}"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+       crossorigin="anonymous"></script>
+      <script src="{% static 'sblog/js/vendor/bootstrap.min.js' %} "></script>
+      <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBhOdIF3Y9382fqJYt5I_sswSrEw5eihAA"></script>
+      <script src="{% static 'sblog/js/easing.min.js' %}"></script>
+      <script src="{% static 'sblog/js/hoverIntent.js' %}"></script>
+      <script src="{% static 'sblog/js/superfish.min.js' %} "></script>
+      <script src="{% static 'sblog/js/jquery.ajaxchimp.min.js' %}"></script>
+      <script src="{% static 'sblog/js/jquery.magnific-popup.min.js' %}"></script>
+      <script src="{% static 'sblog/js/owl.carousel.min.js' %}"></script>
+      <script src="{% static 'sblog/js/jquery.nice-select.min.js' %}"></script>
+      <script src="{% static 'sblog/js/waypoints.min.js' %}"></script>
+      <script src="{% static 'sblog/js/mail-script.js' %} "></script>
+      <script src="{% static 'sblog/js/main.js' %}"></script>
+  </body>
